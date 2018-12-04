@@ -5,17 +5,12 @@ function (user, context, callback) {
       return callback(null, user, context);
     }
     
-    const CHATKIT_API_BASE = `https://us1.pusherplatform.io/services/chatkit/v2`;
-    const USERS_ENDPOINT = `${CHATKIT_API_BASE}/${configuration.chatkitInstanceId}/users`;
+    const PUSHER_OFFICE_ROOM_ID = configuration.chatkitRoomId;
+    const CHATKIT_API_BASE = 'https://us1.pusherplatform.io/services/chatkit/v2';
+    const ADD_USERS_TO_ROOM_ENDPOINT = `${CHATKIT_API_BASE}/${configuration.chatkitInstanceId}/rooms/${PUSHER_OFFICE_ROOM_ID}/users/add`;
   
     const request = require('request');
     const jwt = require('jsonwebtoken');
-    
-    let chatkitUser = {
-      id: user.email,
-      name: user.name,
-      avatar_url: user.picture
-    };
     
     const minute = 60;
     const nowSeconds = Math.floor(Date.now() / 1000);
@@ -36,10 +31,14 @@ function (user, context, callback) {
       "Authorization": `Bearer ${token}`
     };
     
-    request.post({ 
-      uri: USERS_ENDPOINT,
+    const payload = {
+      "user_ids": [user.email]
+    };
+    
+    request.put({ 
+      uri: ADD_USERS_TO_ROOM_ENDPOINT,
       json: true,
-      body: chatkitUser,
+      body: payload,
       headers: headers
   }, ( error, response, body )  => {
       
@@ -52,4 +51,5 @@ function (user, context, callback) {
       
       callback(null, user, context);
   });  
-  }
+  
+}
