@@ -5,9 +5,11 @@ function (user, context, callback) {
       return callback(null, user, context);
     }
     
-    const PUSHER_OFFICE_ROOM_ID = configuration.chatkitRoomId;
+    const CHATKIT_INSTANCE_ID = configuration.chatkitInstanceLocator.split(':')[2];
+    const CHATKIT_KEY_ID = configuration.chatkitSecret.split(':')[0]; 
+    const CHATKIT_KEY_SECRET = configuration.chatkitSecret.split(':')[1];
     const CHATKIT_API_BASE = 'https://us1.pusherplatform.io/services/chatkit/v2';
-    const ADD_USERS_TO_ROOM_ENDPOINT = `${CHATKIT_API_BASE}/${configuration.chatkitInstanceId}/rooms/${PUSHER_OFFICE_ROOM_ID}/users/add`;
+    const ADD_USERS_TO_ROOM_ENDPOINT = `${CHATKIT_API_BASE}/${CHATKIT_INSTANCE_ID}/rooms/${configuration.chatkitRoomId}/users/add`;
   
     const request = require('request');
     const jwt = require('jsonwebtoken');
@@ -16,14 +18,14 @@ function (user, context, callback) {
     const nowSeconds = Math.floor(Date.now() / 1000);
   
     const jwtPayload = {
-      instance: configuration.chatkitInstanceId,
-      iss: `api_keys/${configuration.chatkitKeyId}`,
+      instance: CHATKIT_INSTANCE_ID,
+      iss: `api_keys/${CHATKIT_KEY_ID}`,
       iat: nowSeconds,
       exp: nowSeconds +  minute,
       su:  true
     };
   
-    let token = jwt.sign(jwtPayload, configuration.chatkitKeySecret);
+    let token = jwt.sign(jwtPayload, CHATKIT_KEY_SECRET);
     console.log(token);
     
     const headers = {  

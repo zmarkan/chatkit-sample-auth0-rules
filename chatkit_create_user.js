@@ -4,9 +4,13 @@ function (user, context, callback) {
       console.log("Ignoring the user creation step");
       return callback(null, user, context);
     }
-    
+
+    const CHATKIT_INSTANCE_ID = configuration.chatkitInstanceLocator.split(':')[2];
+    const CHATKIT_KEY_ID = configuration.chatkitSecret.split(':')[0]; 
+    const CHATKIT_KEY_SECRET = configuration.chatkitSecret.split(':')[1];
     const CHATKIT_API_BASE = `https://us1.pusherplatform.io/services/chatkit/v2`;
-    const USERS_ENDPOINT = `${CHATKIT_API_BASE}/${configuration.chatkitInstanceId}/users`;
+    const USERS_ENDPOINT = `${CHATKIT_API_BASE}/${CHATKIT_INSTANCE_ID}/users`;
+
   
     const request = require('request');
     const jwt = require('jsonwebtoken');
@@ -21,7 +25,7 @@ function (user, context, callback) {
     const nowSeconds = Math.floor(Date.now() / 1000);
   
     const jwtPayload = {
-      instance: configuration.chatkitInstanceId,
+      instance: CHATKIT_INSTANCE_ID,
       iss: `api_keys/${configuration.chatkitKeyId}`,
       iat: nowSeconds,
       exp: nowSeconds +  minute,
